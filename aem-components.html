@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SmartStand Page, Built from AEM 6 Components | Marcello Miranda</title>
+<meta name="description" content="A working demo of the Rainin SmartStand page as it was built in AEM 6 classic UI: components in paragraph systems, dialogs, and assets from the DAM.">
+<style>
+:root{--mt:#004494;--mt-dark:#00336E;--ink:#222;--muted:#5B5B5B;--line:#D9D9D9;--edit:#2F6FEB}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#F2F2F0}
+button,input,textarea{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--edit);outline-offset:2px}
+
+/* intro */
+.intro{max-width:1180px;margin:0 auto;padding:28px 20px 16px;font-family:'Helvetica Neue',Arial,sans-serif}
+.intro a.back{font:700 12px/1 'Courier New',monospace;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--muted)}
+.intro h1{margin:14px 0 8px;font-size:32px;line-height:1.08;letter-spacing:-.01em}
+.intro p{margin:0;max-width:780px;color:var(--muted);font-size:16px;line-height:1.55}
+.intro .try{margin-top:10px;color:var(--ink);font-size:14px}
+
+/* author chrome */
+.frame{max-width:1180px;margin:0 auto 48px;padding:0 20px}
+.cqbar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;background:#3B3B3B;color:#eee;padding:8px 12px;border-radius:6px 6px 0 0;font-size:12px}
+.cqbar .path{font-family:'Courier New',monospace;color:#cfcfcf;margin-right:auto;word-break:break-all}
+.modes{display:inline-flex;border:1px solid #666;border-radius:4px;overflow:hidden}
+.modes button{background:#4A4A4A;border:0;color:#ddd;padding:5px 12px;cursor:pointer;font-size:12px;font-weight:bold}
+.modes button[aria-pressed="true"]{background:#E8E8E8;color:#222}
+.canvas{position:relative;background:#fff;border:1px solid #bbb;border-top:0;display:grid;grid-template-columns:minmax(0,1fr) 220px;align-items:start}
+
+/* sidekick */
+.sidekick{position:sticky;top:12px;margin:12px;border:1px solid #8DA2C0;border-radius:4px;background:#EEF1F6;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.sidekick h2{margin:0;padding:6px 10px;background:linear-gradient(#5D86C2,#3F67A5);color:#fff;font-size:12px;border-radius:3px 3px 0 0}
+.sidekick .grp{padding:6px 10px 2px;font-weight:bold;color:#15428B;border-top:1px solid #C9D3E3}
+.sidekick ul{list-style:none;margin:0;padding:2px 6px 8px}
+.sidekick li button{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:3px;padding:4px 6px;cursor:pointer;font-size:12px}
+.sidekick li button:hover{background:#DDE6F4;border-color:#A9BFD6}
+.sidekick .note{padding:6px 10px 10px;color:#555;line-height:1.4;border-top:1px solid #C9D3E3}
+.preview .sidekick ul,.preview .sidekick .grp{display:none}
+
+/* MT page */
+.page{min-width:0;padding-bottom:20px}
+.mt-head{display:flex;align-items:center;gap:18px;padding:14px 20px;border-bottom:4px solid var(--mt)}
+.mt-head .logo{font-weight:bold;font-size:18px;letter-spacing:.02em;color:var(--mt)}
+.mt-head .logo small{display:block;font-size:10px;letter-spacing:.2em;color:#666;font-weight:normal}
+.mt-head nav{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:#333}
+.crumbs{padding:10px 20px;font-size:12px;color:#666}
+.crumbs a{color:var(--mt);text-decoration:none}
+.par{padding:0 20px}
+.cmp{position:relative;margin:0 0 16px}
+.lph{position:relative;color:#fff;min-height:220px;background:#24425f}
+.lph img{display:block;width:100%;height:260px;object-fit:cover}
+.lph .txt{position:absolute;left:24px;bottom:22px;right:24px;text-shadow:0 1px 6px rgba(0,0,0,.55)}
+.lph h1{margin:0;font-size:36px}
+.lph p{margin:4px 0 0;font-size:18px}
+.ptabs{border-bottom:2px solid var(--mt);display:flex;flex-wrap:wrap;gap:2px;margin:0 0 16px}
+.ptabs button{background:#E9EEF5;border:0;padding:10px 16px;font-size:14px;font-weight:bold;color:var(--mt);cursor:pointer}
+.ptabs button[aria-selected="true"]{background:var(--mt);color:#fff}
+.tabpanel[hidden]{display:none}
+.text h3{margin:0 0 6px;font-size:18px;color:var(--mt)}
+.text p{margin:0 0 6px;font-size:14px;line-height:1.55}
+.textimage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center}
+.textimage img{width:100%;display:block}
+.moodimage img{width:100%;display:block;max-height:300px;object-fit:cover}
+.video{position:relative}
+.video img{width:100%;display:block}
+.video .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
+.video .play::after{content:"";border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
+table.specs{width:100%;border-collapse:collapse;font-size:13px}
+table.specs th,table.specs td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left}
+table.specs th{background:#F2F5F9;color:var(--mt)}
+.doclist{list-style:none;margin:0;padding:0}
+.doclist li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.doclist b{color:var(--mt)}
+.svb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.svb .box{border:1px solid var(--line)}
+.svb img{width:100%;height:110px;object-fit:cover;display:block;background:#ddd}
+.svb .box div{padding:10px}
+.svb b{display:block;color:var(--mt);font-size:15px}
+.svb span{font-size:12px;color:#555}
+.svb ul{margin:6px 0 0;padding-left:16px;font-size:12px;line-height:1.5}
+.mt-foot{margin-top:20px;padding:16px 20px;background:#F4F4F4;font-size:12px;color:#666}
+
+/* edit mode */
+.edit .cmp{outline:1px dashed #8AA9E6;outline-offset:4px;cursor:pointer}
+.edit .cmp:hover,.edit .cmp.sel{outline:2px solid var(--edit)}
+.edit .cmp .bar{display:flex}
+.cmp .bar{display:none;position:absolute;top:-4px;right:-4px;z-index:3;gap:2px;transform:translateY(-100%)}
+.cmp .bar span,.cmp .bar button{background:var(--edit);color:#fff;font-size:11px;padding:3px 7px;border:0;border-radius:2px 2px 0 0}
+.cmp .bar button{cursor:pointer;background:#1C4FB8}
+.edit .cmp:not(:hover):not(.sel) .bar{opacity:.0}
+.edit .cmp:focus-within .bar{opacity:1}
+.parsys-new{display:none;margin:0 0 18px;border:1px dashed #9AB3E0;background:repeating-linear-gradient(45deg,#F6F8FC,#F6F8FC 8px,#EEF2FA 8px,#EEF2FA 16px);padding:12px;text-align:center;font-size:12px;color:#4E6A9E}
+.edit .parsys-new{display:block}
+
+/* classic dialog */
+.dlg-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:20;padding:12px}
+.dlg-bg.on{display:flex}
+.dlg{width:min(520px,100%);background:#DFE8F6;border:1px solid #99BBE8;border-radius:5px;box-shadow:0 6px 24px rgba(0,0,0,.35);font-size:12px}
+.dlg h2{margin:0;padding:7px 10px;font-size:12px;color:#15428B;background:linear-gradient(#DAE6F4,#C3D7EE);border-bottom:1px solid #99BBE8;border-radius:5px 5px 0 0}
+.dlg .tabs{display:flex;gap:2px;padding:6px 8px 0}
+.dlg .tabs span{background:#fff;border:1px solid #99BBE8;border-bottom:0;padding:4px 10px;border-radius:3px 3px 0 0;font-weight:bold;color:#15428B}
+.dlg form{background:#fff;margin:0 8px;border:1px solid #99BBE8;padding:10px}
+.dlg label{display:block;margin:0 0 8px}
+.dlg label span{display:block;margin-bottom:3px;color:#333}
+.dlg input,.dlg textarea{width:100%;border:1px solid #B5B8C8;padding:4px 5px;font-size:12px;background:#fff}
+.dlg input[readonly]{background:#F3F3F3;color:#555}
+.dlg textarea{min-height:90px;resize:vertical}
+.dlg .acts{display:flex;justify-content:flex-end;gap:6px;padding:8px}
+.dlg .acts button{min-width:70px;padding:4px 10px;border:1px solid #99BBE8;border-radius:3px;background:linear-gradient(#fff,#E2E9F3);cursor:pointer;font-size:12px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 14px;border-radius:6px;font-size:13px;opacity:0;transition:opacity .2s;z-index:30;pointer-events:none}
+.toast.on{opacity:1}
+
+@media (max-width:860px){
+  .canvas{grid-template-columns:1fr}
+  .sidekick{position:static;order:-1}
+  .svb{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .textimage{grid-template-columns:1fr}
+  .lph h1{font-size:28px}
+}
+@media (max-width:520px){
+  .frame{padding:0 8px}
+  .par{padding:0 12px}
+  .svb{grid-template-columns:1fr}
+  .mt-head nav{display:none}
+  table.specs{font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<header class="intro">
+  <a class="back" href="https://marcello415.github.io/portfolio-html/web/work/aem-commerce.html">&larr; AEM, Commerce &amp; SEO case study</a>
+  <h1>The SmartStand page, built from AEM 6 components</h1>
+  <p>On mt.com/rainin I built pages in AEM 6 classic UI from a library of components dropped into paragraph systems, each with its own dialog, and images from the DAM. This is the SmartStand page rebuilt that way from the archived page, with the original copy and images.</p>
+  <p class="try"><b>Try it:</b> in <b>Edit</b> mode, open any component&rsquo;s dialog and change it, or add a component from the sidekick. Switch to <b>Preview</b> to see the page as visitors did.</p>
+</header>
+
+<div class="frame">
+  <div class="cqbar">
+    <span class="path">/content/mt/us/en/home/products/pipettes/pipette-management/smartstand.html</span>
+    <span id="lblMode">Mode</span>
+    <div class="modes" role="group" aria-labelledby="lblMode">
+      <button type="button" id="mEdit" aria-pressed="true">Edit</button>
+      <button type="button" id="mPrev" aria-pressed="false">Preview</button>
+    </div>
+  </div>
+
+  <div class="canvas edit" id="canvas">
+    <div class="page" id="page"></div>
+    <aside class="sidekick" aria-label="Sidekick">
+      <h2>Sidekick</h2>
+      <div class="grp">MT Content</div>
+      <ul id="sk-content"></ul>
+      <div class="grp">MT Media</div>
+      <ul id="sk-media"></ul>
+      <div class="note" id="sk-note">Click a component to add it to the open tab&rsquo;s paragraph system.</div>
+    </aside>
+  </div>
+</div>
+
+<div class="dlg-bg" id="dlgBg">
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+    <h2 id="dlgTitle">Edit component</h2>
+    <div class="tabs"><span>General</span></div>
+    <form id="dlgForm"></form>
+    <div class="acts"><button type="button" id="dlgOk">OK</button><button type="button" id="dlgCancel">Cancel</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var DAM = 'https://web.archive.org/web/20190414172759im_/https://www.mt.com';
+  function rend(path, ext){ return path + '/_jcr_content/renditions/cq5dam.web.1280.1280.' + ext; }
+
+  var COMPONENTS = {
+    landingpageheader:   {name:'Landing Page Header', group:'content', fields:['title','subtitle','image']},
+    text:                {name:'Text', group:'content', fields:['title','text']},
+    textimage:           {name:'Text & Image', group:'content', fields:['title','text','image']},
+    matchingblocktable:  {name:'Product Table', group:'content', fields:[]},
+    doclist:             {name:'Document List', group:'content', fields:[]},
+    servicevalueboxes:   {name:'Service Value Boxes', group:'content', fields:['title','text']},
+    standalonemoodimage: {name:'Standalone Mood Image', group:'media', fields:['image','alt']},
+    embeddedvideo:       {name:'Embedded Video', group:'media', fields:['title','image']}
+  };
+  var FIELD = {title:'Title', subtitle:'Subtitle', text:'Text', image:'Image (DAM path)', alt:'Alt text'};
+
+  var IMG = {
+    mood2: '/dam/RAININ/mood/smartstand_mood_2-2.jpg',
+    mood3: '/dam/RAININ/mood/smartstand_mood_3-4.jpg',
+    mood4: '/dam/RAININ/mood/smartstand_mood_4-2.jpg',
+    video: '/dam/RAININ/FlashMovies/SmtStd.Video.FIRSTframe.png'
+  };
+  function src(path){
+    if (!path) return '';
+    var ext = /\.png$/i.test(path) ? 'png' : 'jpeg';
+    return DAM + rend(path, ext);
+  }
+
+  var initial = function(){ return {
+    header: [
+      {type:'landingpageheader', title:'SmartStand', subtitle:'The World’s First Intelligent Pipette Stand', image:IMG.mood2}
+    ],
+    tabs: [
+      {id:'overview', label:'Overview', par:[
+        {type:'text', title:'Reduce out-of-service/specification-related costs', text:'SmartStand is a unique, easy-to-implement solution to help labs adhere to their standard operating procedures and maintain GLP/GMP compliance. With SmartStand, researchers know the current status of their Rainin XLS or XLS+ pipette every time they use it.'},
+        {type:'textimage', title:'Proactively manage compliance', text:'By reading the RFID chip that’s in every Rainin XLS and XLS+ pipette, SmartStand instantly and automatically displays the compliance status of up to four manual Pipet-Lite XLS/XLS+ or electronic E4 XLS/XLS+ pipettes placed on the stand. Pick up a pipette and SmartStand’s color LCD screen switches to a detailed view of the pipette’s service and calibration data.', image:IMG.mood3},
+        {type:'text', title:'Save time on recordkeeping and reporting', text:'Looking for a more comprehensive pipette management solution? SmartStand comes with our EasyDirect pipette management software. EasyDirect uses SmartStand to collect individual pipette data, then organizes it to provide a complete overview of your entire pipette inventory. Once in EasyDirect, you can search, sort, generate reports and export pipette data to other applications.'},
+        {type:'standalonemoodimage', image:IMG.mood4, alt:'SmartStand on a lab bench'},
+        {type:'text', title:'It’s a charger too!', text:'SmartStand will charge up to four E4 XLS and XLS+ electronic pipettes simultaneously.'}
+      ]},
+      {id:'products', label:'Products and Specs', par:[
+        {type:'matchingblocktable'}
+      ]},
+      {id:'docs', label:'Documentation', par:[
+        {type:'doclist'}
+      ]},
+      {id:'services', label:'Services', par:[
+        {type:'servicevalueboxes', title:'Expert Service – Tailored to Fit Your Pipetting Needs', text:'METTLER TOLEDO supports and services your pipettes through their entire life-cycle, from good pipetting techniques to preventive maintenance and calibration to equipment repair.'}
+      ]},
+      {id:'action', label:'See it in Action', par:[
+        {type:'embeddedvideo', title:'SmartStand in action', image:IMG.video}
+      ]}
+    ]
+  };};
+
+  var PRODUCTS = [
+    ['SmartStand SCS-B','Stand; Hang-Up™','30312897'],
+    ['Fastening Kit Magnetic SCS-FK-M','Hang-Up™','30312899'],
+    ['Fastening Kit Shelf SCS-FK-S','Hang-Up™','30313000'],
+    ['Fastening Kit Bracket SCS-FK-B','Hang-Up™','30313247'],
+    ['Elect Pipettes Pwr Supply E4-RCSWPS','N/A','17012879']
+  ];
+  var DOCS = [
+    ['Operating Instructions','SmartStand User Manual'],
+    ['Operating Instructions','SmartStand - Quick Guide'],
+    ['Operating Instructions','EasyDirect - PAM - Operating Instructions'],
+    ['Operating Instructions','SmartStand Accessories Quick Guide'],
+    ['Brochures','SmartStand Brochures'],
+    ['White Paper','Optimal Quality Management'],
+    ['Software','EasyDirect Software'],
+    ['Certificates','SmartStand - Declaration of Conformity']
+  ];
+  var SERVICES = [
+    ['Uptime','Support & Repair','/dam/Global_Service/global-service-offering/main-service/uptime.jpg',['Rainin Pipette Repair & Service','Service Kits','Onsite Pipette Service']],
+    ['Performance','Maintenance & Optimization','/dam/Global_Service/global-service-offering/main-service/performance.jpg',['Preventive Maintenance']],
+    ['Compliance','Calibration & Quality','/dam/Global_Service/global-service-offering/main-service/compliance.jpg',['Rainin Pipette Calibration Services']],
+    ['Expertise','Training & Consulting','/dam/Global_Service/global-service-offering/main-service/expertise.jpg',['GPP™ - Good Pipetting Practice']]
+  ];
+
+  var page, state = {edit:true, tab:'overview', sel:null};
+  function esc(t){return String(t == null ? '' : t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  function body(c){
+    switch(c.type){
+      case 'landingpageheader':
+        return '<div class="lph"><img src="' + src(c.image) + '" alt=""><div class="txt"><h1>' + esc(c.title) + '</h1><p>' + esc(c.subtitle) + '</p></div></div>';
+      case 'text':
+        return '<div class="text">' + (c.title ? '<h3>' + esc(c.title) + '</h3>' : '') + '<p>' + esc(c.text) + '</p></div>';
+      case 'textimage':
+        return '<div class="textimage"><div class="text"><h3>' + esc(c.title) + '</h3><p>' + esc(c.text) + '</p></div>' + (c.image ? '<img src="' + src(c.image) + '" alt="">' : '') + '</div>';
+      case 'standalonemoodimage':
+        return '<div class="moodimage"><img src="' + src(c.image) + '" alt="' + esc(c.alt) + '"></div>';
+      case 'embeddedvideo':
+        return '<div class="video"><img src="' + src(c.image) + '" alt="' + esc(c.title) + '"><span class="play" aria-hidden="true"></span></div>';
+      case 'matchingblocktable':
+        return '<table class="specs"><thead><tr><th scope="col">Product</th><th scope="col">Stand configuration</th><th scope="col">Material No.</th></tr></thead><tbody>' +
+          PRODUCTS.map(function(p){return '<tr><td>' + esc(p[0]) + '</td><td>' + esc(p[1]) + '</td><td>' + esc(p[2]) + '</td></tr>';}).join('') + '</tbody></table>';
+      case 'doclist':
+        return '<ul class="doclist">' + DOCS.map(function(d){return '<li><b>' + esc(d[1]) + '</b><br><span>' + esc(d[0]) + '</span></li>';}).join('') + '</ul>';
+      case 'servicevalueboxes':
+        return '<div class="text"><h3>' + esc(c.title) + '</h3><p>' + esc(c.text) + '</p></div><div class="svb">' +
+          SERVICES.map(function(s){return '<div class="box"><img src="' + DAM + s[2] + '" alt=""><div><b>' + esc(s[0]) + '</b><span>' + esc(s[1]) + '</span><ul>' + s[3].map(function(i){return '<li>' + esc(i) + '</li>';}).join('') + '</ul></div></div>';}).join('') + '</div>';
+    }
+    return '';
+  }
+
+  function cmp(c, where, i){
+    var def = COMPONENTS[c.type], key = where + ':' + i, editable = def.fields.length > 0;
+    return '<div class="cmp' + (state.sel === key ? ' sel' : '') + '" data-key="' + key + '">' +
+      '<div class="bar"><span>' + esc(def.name) + '</span>' + (editable ? '<button type="button" data-edit="' + key + '">Edit</button>' : '<span>Read-only in this demo</span>') + '</div>' +
+      body(c) + '</div>';
+  }
+
+  function render(){
+    var canvas = document.getElementById('canvas');
+    canvas.className = 'canvas ' + (state.edit ? 'edit' : 'preview');
+    document.getElementById('mEdit').setAttribute('aria-pressed', state.edit);
+    document.getElementById('mPrev').setAttribute('aria-pressed', !state.edit);
+    var tab = page.tabs.filter(function(t){return t.id === state.tab;})[0];
+    var html = '<div class="mt-head"><div class="logo">METTLER TOLEDO<small>RAININ</small></div><nav aria-label="Main"><span>Products &amp; Solutions</span><span>Industries</span><span>Services &amp; Support</span><span>Events &amp; Expertise</span><span>About Us</span></nav></div>' +
+      '<div class="crumbs">You are here: <a href="#" onclick="return false">Home</a> / <a href="#" onclick="return false">Pipettes</a> / <a href="#" onclick="return false">Pipette Management</a> / SmartStand</div>' +
+      '<div class="par">' + page.header.map(function(c, i){return cmp(c, 'header', i);}).join('') + '</div>' +
+      '<div class="par"><div class="cmp" data-key="ptabs"><div class="bar"><span>Product Tabs</span></div><div class="ptabs" role="tablist">' +
+      page.tabs.map(function(t){return '<button type="button" role="tab" aria-selected="' + (t.id === state.tab) + '" data-tab="' + t.id + '">' + esc(t.label) + '</button>';}).join('') + '</div>' +
+      '<div class="tabpanel" role="tabpanel">' + tab.par.map(function(c, i){return cmp(c, tab.id, i);}).join('') +
+      '<div class="parsys-new">Drag components or assets here</div></div></div></div>' +
+      '<div class="mt-foot">&copy; Mettler-Toledo. Rebuilt for this portfolio from the archived April 2019 page.</div>';
+    document.getElementById('page').innerHTML = html;
+    document.getElementById('sk-note').textContent = state.edit ? 'Click a component to add it to the “' + tab.label + '” tab.' : 'Switch to Edit to add components.';
+  }
+
+  function find(key){
+    var parts = key.split(':'), where = parts[0], i = +parts[1];
+    var list = where === 'header' ? page.header : page.tabs.filter(function(t){return t.id === where;})[0].par;
+    return {list:list, i:i, c:list[i]};
+  }
+
+  var editing = null, lastFocus = null;
+  function openDialog(key){
+    var f = find(key), c = f.c, def = COMPONENTS[c.type];
+    editing = key; lastFocus = document.activeElement;
+    document.getElementById('dlgTitle').textContent = def.name;
+    var html = '';
+    def.fields.forEach(function(k){
+      var v = c[k] || '';
+      if (k === 'text') html += '<label><span>' + FIELD[k] + '</span><textarea name="text">' + esc(v) + '</textarea></label>';
+      else if (k === 'image') html += '<label><span>' + FIELD[k] + '</span><input name="image" value="' + esc('/content' + v) + '"></label>' +
+        '<label><span>Rendition (set by the component)</span><input readonly value="cq5dam.web.1280.1280"></label>';
+      else html += '<label><span>' + FIELD[k] + '</span><input name="' + k + '" value="' + esc(v) + '"></label>';
+    });
+    document.getElementById('dlgForm').innerHTML = html;
+    document.getElementById('dlgBg').classList.add('on');
+    var first = document.querySelector('#dlgForm input:not([readonly]),#dlgForm textarea'); if (first) first.focus();
+  }
+  function closeDialog(){
+    document.getElementById('dlgBg').classList.remove('on'); editing = null;
+    if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus();
+  }
+  function saveDialog(){
+    var f = find(editing), c = f.c;
+    Array.prototype.forEach.call(document.querySelectorAll('#dlgForm [name]'), function(el){
+      var v = el.value;
+      if (el.name === 'image') v = v.replace(/^\/content/, '');
+      c[el.name] = v;
+    });
+    closeDialog(); render(); toast('Saved. The page updated in place, the way an author edit did.');
+  }
+
+  function addComponent(type){
+    if (!state.edit) return;
+    var tab = page.tabs.filter(function(t){return t.id === state.tab;})[0];
+    var c = {type:type};
+    if (type === 'text') { c.title = 'New text'; c.text = 'Open Edit to write the copy for this section.'; }
+    if (type === 'textimage') { c.title = 'New text & image'; c.text = 'Open Edit to write the copy and pick an image from the DAM.'; c.image = IMG.mood3; }
+    if (type === 'standalonemoodimage') { c.image = IMG.mood2; c.alt = 'SmartStand'; }
+    if (type === 'embeddedvideo') { c.title = 'Video'; c.image = IMG.video; }
+    tab.par.push(c);
+    state.sel = tab.id + ':' + (tab.par.length - 1);
+    render(); toast(COMPONENTS[type].name + ' added to the “' + tab.label + '” tab.');
+  }
+
+  function toast(m){var t = document.getElementById('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(function(){t.classList.remove('on');}, 2400);}
+
+  ['content','media'].forEach(function(g){
+    document.getElementById('sk-' + g).innerHTML = ['text','textimage','standalonemoodimage','embeddedvideo'].filter(function(k){return COMPONENTS[k].group === g;})
+      .map(function(k){return '<li><button type="button" data-add="' + k + '">' + esc(COMPONENTS[k].name) + '</button></li>';}).join('');
+  });
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (t.closest('[data-add]')) return addComponent(t.closest('[data-add]').getAttribute('data-add'));
+    if (t.closest('[data-tab]')) { state.tab = t.closest('[data-tab]').getAttribute('data-tab'); state.sel = null; return render(); }
+    if (t.closest('[data-edit]')) return openDialog(t.closest('[data-edit]').getAttribute('data-edit'));
+    var c = t.closest('#page .cmp[data-key*=":"]');
+    if (c && state.edit) { state.sel = c.getAttribute('data-key'); render(); }
+  });
+  document.getElementById('page').addEventListener('dblclick', function(e){
+    var c = e.target.closest('.cmp[data-key*=":"]');
+    if (c && state.edit && COMPONENTS[find(c.getAttribute('data-key')).c.type].fields.length) openDialog(c.getAttribute('data-key'));
+  });
+  document.getElementById('mEdit').addEventListener('click', function(){ state.edit = true; render(); });
+  document.getElementById('mPrev').addEventListener('click', function(){ state.edit = false; state.sel = null; render(); });
+  document.getElementById('dlgOk').addEventListener('click', saveDialog);
+  document.getElementById('dlgCancel').addEventListener('click', closeDialog);
+  document.getElementById('dlgBg').addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeDialog();
+    if (e.key === 'Tab'){
+      var f = Array.prototype.slice.call(document.querySelectorAll('.dlg input:not([readonly]),.dlg textarea,.dlg button'));
+      var i = f.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0){ e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && i === f.length - 1){ e.preventDefault(); f[0].focus(); }
+    }
+  });
+
+  page = initial(); render();
+})();
+</script>
+</body>
+</html>
