@@ -4,390 +4,357 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>SmartStand Page, Built from AEM 6 Components | Marcello Miranda</title>
-<meta name="description" content="A working demo of the Rainin SmartStand page as it was built in AEM 6 classic UI: components in paragraph systems, dialogs, and assets from the DAM.">
+<title>How a Product Page Comes Together in AEM 6 | Marcello Miranda</title>
+<meta name="description" content="A step-by-step storyboard of how I built Rainin product pages in AEM 6 classic UI from components, DAM assets, store data and translations for 23 markets.">
+<link rel="icon" type="image/svg+xml" href="https://marcello415.github.io/portfolio-html/images/icon-web.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&amp;family=Space+Mono:wght@400;700&amp;display=swap">
 <style>
-:root{--mt:#004494;--mt-dark:#00336E;--ink:#222;--muted:#5B5B5B;--line:#D9D9D9;--edit:#2F6FEB}
+:root{--ink:#161512;--paper:#FBFAF7;--line:#E4E1D9;--muted:#56534C;--accent:#B8381F;--ok:#1D6B3A;--bad:#B42318;--blue:#2F6FEB}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#F2F2F0}
-button,input,textarea{font:inherit;color:inherit}
-button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--edit);outline-offset:2px}
+body{font-family:'Archivo',system-ui,sans-serif;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.5}
+.mono{font-family:'Space Mono',monospace}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 
-/* intro */
-.intro{max-width:1180px;margin:0 auto;padding:28px 20px 16px;font-family:'Helvetica Neue',Arial,sans-serif}
-.intro a.back{font:700 12px/1 'Courier New',monospace;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--muted)}
-.intro h1{margin:14px 0 8px;font-size:32px;line-height:1.08;letter-spacing:-.01em}
-.intro p{margin:0;max-width:780px;color:var(--muted);font-size:16px;line-height:1.55}
-.intro .try{margin-top:10px;color:var(--ink);font-size:14px}
+header.top{padding:32px 0 8px}
+.back{font:700 12px 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--muted)}
+h1{margin:16px 0 10px;font-size:44px;line-height:1.02;letter-spacing:-.03em;max-width:820px}
+.lead{margin:0;max-width:720px;font-size:19px;color:#3A3833}
+.ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:28px 0 8px;padding:20px 0;border-top:1.5px solid var(--ink);border-bottom:1px solid var(--line)}
+.ctx dt{font:700 11px 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.ctx dd{margin:0;font-weight:600}
+.note{font-size:13px;color:var(--muted);margin:10px 0 0}
 
-/* author chrome */
-.frame{max-width:1180px;margin:0 auto 48px;padding:0 20px}
-.cqbar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;background:#3B3B3B;color:#eee;padding:8px 12px;border-radius:6px 6px 0 0;font-size:12px}
-.cqbar .path{font-family:'Courier New',monospace;color:#cfcfcf;margin-right:auto;word-break:break-all}
-.modes{display:inline-flex;border:1px solid #666;border-radius:4px;overflow:hidden}
-.modes button{background:#4A4A4A;border:0;color:#ddd;padding:5px 12px;cursor:pointer;font-size:12px;font-weight:bold}
-.modes button[aria-pressed="true"]{background:#E8E8E8;color:#222}
-.canvas{position:relative;background:#fff;border:1px solid #bbb;border-top:0;display:grid;grid-template-columns:minmax(0,1fr) 220px;align-items:start}
+/* storyboard */
+.board{list-style:none;margin:40px 0 0;padding:0;counter-reset:frame}
+.frame{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:32px;padding:40px 0;border-top:1px solid var(--line);align-items:start}
+.frame:first-child{border-top:0}
+.step{font:700 12px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.frame h2{margin:8px 0 10px;font-size:28px;line-height:1.1;letter-spacing:-.02em}
+.frame p{margin:0 0 10px;font-size:16px;color:#3A3833}
+.frame .mine{margin-top:14px;padding:12px 14px;background:#fff;border-left:3px solid var(--ink);font-size:14px}
+.frame .mine b{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
 
-/* sidekick */
-.sidekick{position:sticky;top:12px;margin:12px;border:1px solid #8DA2C0;border-radius:4px;background:#EEF1F6;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.sidekick h2{margin:0;padding:6px 10px;background:linear-gradient(#5D86C2,#3F67A5);color:#fff;font-size:12px;border-radius:3px 3px 0 0}
-.sidekick .grp{padding:6px 10px 2px;font-weight:bold;color:#15428B;border-top:1px solid #C9D3E3}
-.sidekick ul{list-style:none;margin:0;padding:2px 6px 8px}
-.sidekick li button{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:3px;padding:4px 6px;cursor:pointer;font-size:12px}
-.sidekick li button:hover{background:#DDE6F4;border-color:#A9BFD6}
-.sidekick .note{padding:6px 10px 10px;color:#555;line-height:1.4;border-top:1px solid #C9D3E3}
-.preview .sidekick ul,.preview .sidekick .grp{display:none}
+/* example cards */
+.ex{background:#fff;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden}
+.ex-h{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-bottom:1.5px solid var(--ink);font:700 11px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+.ex-h span:last-child{color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
+.ex-b{padding:14px}
+.cap{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* MT page */
-.page{min-width:0;padding-bottom:20px}
-.mt-head{display:flex;align-items:center;gap:18px;padding:14px 20px;border-bottom:4px solid var(--mt)}
-.mt-head .logo{font-weight:bold;font-size:18px;letter-spacing:.02em;color:var(--mt)}
-.mt-head .logo small{display:block;font-size:10px;letter-spacing:.2em;color:#666;font-weight:normal}
-.mt-head nav{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:#333}
-.crumbs{padding:10px 20px;font-size:12px;color:#666}
-.crumbs a{color:var(--mt);text-decoration:none}
-.par{padding:0 20px}
-.cmp{position:relative;margin:0 0 16px}
-.lph{position:relative;color:#fff;min-height:220px;background:#24425f}
-.lph img{display:block;width:100%;height:260px;object-fit:cover}
-.lph .txt{position:absolute;left:24px;bottom:22px;right:24px;text-shadow:0 1px 6px rgba(0,0,0,.55)}
-.lph h1{margin:0;font-size:36px}
-.lph p{margin:4px 0 0;font-size:18px}
-.ptabs{border-bottom:2px solid var(--mt);display:flex;flex-wrap:wrap;gap:2px;margin:0 0 16px}
-.ptabs button{background:#E9EEF5;border:0;padding:10px 16px;font-size:14px;font-weight:bold;color:var(--mt);cursor:pointer}
-.ptabs button[aria-selected="true"]{background:var(--mt);color:#fff}
-.tabpanel[hidden]{display:none}
-.text h3{margin:0 0 6px;font-size:18px;color:var(--mt)}
-.text p{margin:0 0 6px;font-size:14px;line-height:1.55}
-.textimage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center}
-.textimage img{width:100%;display:block}
-.moodimage img{width:100%;display:block;max-height:300px;object-fit:cover}
-.video{position:relative}
-.video img{width:100%;display:block}
-.video .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
-.video .play::after{content:"";border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
-table.specs{width:100%;border-collapse:collapse;font-size:13px}
-table.specs th,table.specs td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left}
-table.specs th{background:#F2F5F9;color:var(--mt)}
-.doclist{list-style:none;margin:0;padding:0}
-.doclist li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
-.doclist b{color:var(--mt)}
-.svb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.svb .box{border:1px solid var(--line)}
-.svb img{width:100%;height:110px;object-fit:cover;display:block;background:#ddd}
-.svb .box div{padding:10px}
-.svb b{display:block;color:var(--mt);font-size:15px}
-.svb span{font-size:12px;color:#555}
-.svb ul{margin:6px 0 0;padding-left:16px;font-size:12px;line-height:1.5}
-.mt-foot{margin-top:20px;padding:16px 20px;background:#F4F4F4;font-size:12px;color:#666}
+.brief{width:100%;border-collapse:collapse;font-size:14px}
+.brief th,.brief td{text-align:left;padding:7px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.brief th{width:34%;font:700 11px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 
-/* edit mode */
-.edit .cmp{outline:1px dashed #8AA9E6;outline-offset:4px;cursor:pointer}
-.edit .cmp:hover,.edit .cmp.sel{outline:2px solid var(--edit)}
-.edit .cmp .bar{display:flex}
-.cmp .bar{display:none;position:absolute;top:-4px;right:-4px;z-index:3;gap:2px;transform:translateY(-100%)}
-.cmp .bar span,.cmp .bar button{background:var(--edit);color:#fff;font-size:11px;padding:3px 7px;border:0;border-radius:2px 2px 0 0}
-.cmp .bar button{cursor:pointer;background:#1C4FB8}
-.edit .cmp:not(:hover):not(.sel) .bar{opacity:.0}
-.edit .cmp:focus-within .bar{opacity:1}
-.parsys-new{display:none;margin:0 0 18px;border:1px dashed #9AB3E0;background:repeating-linear-gradient(45deg,#F6F8FC,#F6F8FC 8px,#EEF2FA 8px,#EEF2FA 16px);padding:12px;text-align:center;font-size:12px;color:#4E6A9E}
-.edit .parsys-new{display:block}
+.fields{margin:0;padding:0;list-style:none}
+.fields li{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.fields li:last-child{border-bottom:0}
+.fields .k{font:700 11px 'Space Mono',monospace;letter-spacing:.04em;color:var(--muted);padding-top:2px}
+.fields .v{word-break:break-word}
+.fields .v.code{font-family:'Space Mono',monospace;font-size:12.5px}
+.type{display:inline-block;font:400 11px 'Space Mono',monospace;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:0 5px;margin-left:6px}
+.path{font:400 11px 'Space Mono',monospace;color:var(--muted);word-break:break-all;margin-bottom:8px}
+.hl{background:#FFF1CC;padding:0 2px}
 
-/* classic dialog */
-.dlg-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:20;padding:12px}
-.dlg-bg.on{display:flex}
-.dlg{width:min(520px,100%);background:#DFE8F6;border:1px solid #99BBE8;border-radius:5px;box-shadow:0 6px 24px rgba(0,0,0,.35);font-size:12px}
-.dlg h2{margin:0;padding:7px 10px;font-size:12px;color:#15428B;background:linear-gradient(#DAE6F4,#C3D7EE);border-bottom:1px solid #99BBE8;border-radius:5px 5px 0 0}
-.dlg .tabs{display:flex;gap:2px;padding:6px 8px 0}
-.dlg .tabs span{background:#fff;border:1px solid #99BBE8;border-bottom:0;padding:4px 10px;border-radius:3px 3px 0 0;font-weight:bold;color:#15428B}
-.dlg form{background:#fff;margin:0 8px;border:1px solid #99BBE8;padding:10px}
-.dlg label{display:block;margin:0 0 8px}
-.dlg label span{display:block;margin-bottom:3px;color:#333}
-.dlg input,.dlg textarea{width:100%;border:1px solid #B5B8C8;padding:4px 5px;font-size:12px;background:#fff}
-.dlg input[readonly]{background:#F3F3F3;color:#555}
-.dlg textarea{min-height:90px;resize:vertical}
-.dlg .acts{display:flex;justify-content:flex-end;gap:6px;padding:8px}
-.dlg .acts button{min-width:70px;padding:4px 10px;border:1px solid #99BBE8;border-radius:3px;background:linear-gradient(#fff,#E2E9F3);cursor:pointer;font-size:12px}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 14px;border-radius:6px;font-size:13px;opacity:0;transition:opacity .2s;z-index:30;pointer-events:none}
-.toast.on{opacity:1}
+/* page wireframe with callouts */
+.wire{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;color:#1d1d1f}
+.wire .nav{display:flex;gap:14px;justify-content:center;align-items:center;font-size:12px;background:#F5F5F2;padding:8px;position:relative}
+.wire .hero{text-align:center;padding:20px 12px 0;position:relative}
+.wire .hero .e{color:var(--accent);font-weight:700;font-size:13px}
+.wire .hero .t{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.wire .hero .s{font-size:15px}
+.wire .hero .d{font-size:12px;color:#555;margin-top:4px}
+.wire .hero .c{display:flex;gap:8px;justify-content:center;margin-top:10px;font-size:13px}
+.wire .hero .c span{border:1px solid #1d1d1f;border-radius:99px;padding:3px 12px}
+.wire .hero .c span.p{background:#1d1d1f;color:#fff}
+.wire .hero svg{display:block;width:100%;max-width:420px;margin:12px auto 14px;box-shadow:5px 5px 0 var(--ink)}
+.wire .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;background:#F5F5F2}
+.wire .tile{background:#fff;border-radius:4px;padding:12px;text-align:center;font-size:13px;position:relative}
+.wire .tile b{display:block;font-size:15px}
+.wire .tile a{color:#0B5CAD;text-decoration:none}
+.wire .fn{font-size:11px;color:#6e6e73;padding:10px 14px;position:relative}
+.pin{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font:700 12px/22px 'Space Mono',monospace;text-align:center}
+.legend{list-style:none;margin:12px 0 0;padding:0;font-size:14px}
+.legend li{display:flex;gap:10px;align-items:baseline;padding:4px 0}
+.legend .pin{position:static;flex:none}
 
-@media (max-width:860px){
-  .canvas{grid-template-columns:1fr}
-  .sidekick{position:static;order:-1}
-  .svb{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .textimage{grid-template-columns:1fr}
-  .lph h1{font-size:28px}
+/* assets */
+.asset{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:start}
+.asset svg{width:100%;height:auto;display:block;box-shadow:4px 4px 0 var(--ink)}
+.rend{list-style:none;margin:6px 0 0;padding:0;font-size:13px}
+.rend li{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line)}
+.rend li span:last-child{color:var(--muted)}
+
+/* launch compare */
+.cmp{width:100%;border-collapse:collapse;font-size:14px}
+.cmp th,.cmp td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp thead th{font:700 11px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--ink)}
+.cmp td.k{font:700 11px 'Space Mono',monospace;color:var(--muted)}
+.cmp td.chg{background:#FFF4E0}
+.when{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px}
+.when b{font-weight:700}
+
+/* UAT */
+.check{list-style:none;margin:0;padding:0;font-size:14px}
+.check li{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.check li::before{content:"";flex:none;width:16px;height:16px;margin-top:2px;border:1.5px solid var(--ink);border-radius:3px;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2 5.2l2 2 4-4.4' fill='none' stroke='%23fff' stroke-width='1.6'/%3E%3C/svg%3E") center/80% no-repeat}
+.catch{border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:12px;background:#fff}
+.catch .where{font:700 11px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;background:#F4F2EE;border-bottom:1px solid var(--line)}
+.catch .ba{display:grid;grid-template-columns:1fr 1fr}
+.catch .ba div{padding:10px 12px;font-size:13px}
+.catch .ba div:first-child{border-right:1px solid var(--line)}
+.catch .lab{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.bad .lab{color:var(--bad)}.good .lab{color:var(--ok)}
+.catch code{font-family:'Space Mono',monospace;font-size:12px;word-break:break-all}
+
+/* go live */
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;list-style:none;margin:0;padding:0}
+.flow li{background:#fff;border:1.5px solid var(--ink);border-radius:6px;padding:12px;font-size:13px}
+.flow li b{display:block;font-size:15px;margin-bottom:4px}
+.flow li span{font:700 10px 'Space Mono',monospace;letter-spacing:.1em;color:var(--accent)}
+
+.carry{margin:24px 0 0;padding:32px 0 56px;border-top:1.5px solid var(--ink)}
+.carry h2{margin:0 0 10px;font-size:28px;letter-spacing:-.02em}
+.carry p{max-width:720px;margin:0 0 10px;font-size:17px;color:#3A3833}
+.links{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+.links a{font-weight:700;text-decoration:none;border:1.5px solid var(--ink);padding:9px 14px;border-radius:4px;font-size:14px}
+.links a.dark{background:var(--ink);color:#fff}
+
+@media (max-width:820px){
+  h1{font-size:34px}
+  .frame{grid-template-columns:1fr;gap:18px;padding:32px 0}
+  .flow{grid-template-columns:1fr 1fr}
 }
 @media (max-width:520px){
-  .frame{padding:0 8px}
-  .par{padding:0 12px}
-  .svb{grid-template-columns:1fr}
-  .mt-head nav{display:none}
-  table.specs{font-size:12px}
+  .wrap{padding:0 16px}
+  .row2,.catch .ba{grid-template-columns:1fr}
+  .catch .ba div:first-child{border-right:0;border-bottom:1px solid var(--line)}
+  .asset{grid-template-columns:1fr}
+  .fields li{grid-template-columns:96px minmax(0,1fr)}
+  .wire .hero .t{font-size:24px}
 }
+
+.frame .cap{font-size:13px;color:var(--muted)}
+.stack{list-style:none;margin:0;padding:0}
+.stack li{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:10px 12px;margin-bottom:12px;font-size:14px}
+.stack li b{font-size:15px}
+.stack li span{font:400 11px 'Space Mono',monospace;color:var(--muted)}
+.stack li.new{border-style:dashed;box-shadow:none;background:repeating-linear-gradient(45deg,#FBFAF7,#FBFAF7 8px,#F1EEE7 8px,#F1EEE7 16px);justify-content:center;color:var(--muted);font-size:13px}
+.frame .parlab{font:700 11px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.tabsx{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.tabsx span{font-size:12px;font-weight:700;padding:6px 10px;border:1.5px solid var(--ink);background:#fff}
+.tabsx span.on{background:var(--ink);color:#fff}
+.dlg{background:#fff;border:1.5px solid var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.dlg .ex-h{background:#F4F2EE}
+.dlg label{display:block;padding:0 14px 10px;font-size:12px;color:var(--muted)}
+.dlg label:first-of-type{padding-top:12px}
+.dlg .in{display:block;margin-top:3px;border:1px solid #B9B5AC;padding:6px 8px;font-size:13px;color:var(--ink);background:#fff;line-height:1.45}
+.dlg .in.code{font-family:'Space Mono',monospace;font-size:12px;word-break:break-all}
+.dlg .in.ro{background:#F4F2EE;color:var(--muted)}
+.dlg .acts{display:flex;justify-content:flex-end;gap:8px;padding:0 14px 14px}
+.dlg .acts span{font-size:12px;font-weight:700;padding:5px 12px;border:1.5px solid var(--ink)}
+.dlg .acts span.ok{background:var(--ink);color:#fff}
+.figure svg{display:block;width:100%;height:auto;box-shadow:5px 5px 0 var(--ink)}
+.specs{width:100%;border-collapse:collapse;font-size:13px}
+.specs th,.specs td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.specs thead th{font:700 11px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--ink)}
+.specs td.m{font-family:'Space Mono',monospace;font-size:12px}
+.match{color:var(--ok);font-weight:700}
+.loc td.st{font:700 11px 'Space Mono',monospace}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<header class="intro">
+<header class="top">
   <a class="back" href="https://marcello415.github.io/portfolio-html/web/work/aem-commerce.html">&larr; AEM, Commerce &amp; SEO case study</a>
-  <h1>The SmartStand page, built from AEM 6 components</h1>
-  <p>On mt.com/rainin I built pages in AEM 6 classic UI from a library of components dropped into paragraph systems, each with its own dialog, and images from the DAM. This is the SmartStand page rebuilt that way from the archived page, with the original copy and images.</p>
-  <p class="try"><b>Try it:</b> in <b>Edit</b> mode, open any component&rsquo;s dialog and change it, or add a component from the sidekick. Switch to <b>Preview</b> to see the page as visitors did.</p>
+  <h1>How a product page comes together in AEM 6</h1>
+  <p class="lead">A storyboard of how I built and kept up product pages on mt.com/rainin, using the SmartStand page as the example. Each step shows what happens in AEM, with an example from the real page, and what my part was.</p>
+  <dl class="ctx">
+    <div><dt>Where</dt><dd>Mettler-Toledo Rainin, as Web Producer</dd></div>
+    <div><dt>Scale</dt><dd>Website and store content in 23 markets</dd></div>
+    <div><dt>My role</dt><dd>Pages, components, assets, catalog, translations, SEO</dd></div>
+    <div><dt>Tools</dt><dd>AEM 6 classic UI, DAM, SAP Commerce Cloud, Welocalize</dd></div>
+  </dl>
+  <p class="note">The copy, product numbers and image paths come from the archived SmartStand page (April 2019). The illustrations are drawn for this page.</p>
 </header>
 
-<div class="frame">
-  <div class="cqbar">
-    <span class="path">/content/mt/us/en/home/products/pipettes/pipette-management/smartstand.html</span>
-    <span id="lblMode">Mode</span>
-    <div class="modes" role="group" aria-labelledby="lblMode">
-      <button type="button" id="mEdit" aria-pressed="true">Edit</button>
-      <button type="button" id="mPrev" aria-pressed="false">Preview</button>
+<ol class="board">
+
+  <li class="frame">
+    <div>
+      <div class="step">Step 1 &middot; The page</div>
+      <h2>A product page is a set of tabs and sections</h2>
+      <p>Every Rainin product page followed the same pattern: a header with the product name, then tabs for the overview, products and specs, documentation, services and a video. Every product page was organized the same way.</p>
+      <div class="mine"><b>My part</b>Building new product pages from that pattern and keeping existing ones current.</div>
     </div>
-  </div>
+    <div>
+      <div class="ex">
+        <div class="ex-h"><span>SmartStand page</span><span>outline</span></div>
+        <div class="ex-b">
+          <table class="brief">
+            <tr><th scope="row">Header</th><td>SmartStand &middot; The World&rsquo;s First Intelligent Pipette Stand</td></tr>
+            <tr><th scope="row">Overview</th><td>What it does, compliance, recordkeeping, charging</td></tr>
+            <tr><th scope="row">Products and Specs</th><td>The stand, three fastening kits and a power supply</td></tr>
+            <tr><th scope="row">Documentation</th><td>Manuals, quick guides, brochure, white paper, certificates</td></tr>
+            <tr><th scope="row">Services</th><td>Repair, maintenance, calibration, training</td></tr>
+            <tr><th scope="row">See it in Action</th><td>Product video</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="figure" style="margin-top:20px"><svg viewBox="0 0 640 340" role="img" aria-label="SmartStand pipette stand, header image"><rect width="640" height="340" fill="#EFEDE7"/><g stroke="#E2DFD6" stroke-width="1"><path d="M0 0V340"/><path d="M24 0V340"/><path d="M48 0V340"/><path d="M72 0V340"/><path d="M96 0V340"/><path d="M120 0V340"/><path d="M144 0V340"/><path d="M168 0V340"/><path d="M192 0V340"/><path d="M216 0V340"/><path d="M240 0V340"/><path d="M264 0V340"/><path d="M288 0V340"/><path d="M312 0V340"/><path d="M336 0V340"/><path d="M360 0V340"/><path d="M384 0V340"/><path d="M408 0V340"/><path d="M432 0V340"/><path d="M456 0V340"/><path d="M480 0V340"/><path d="M504 0V340"/><path d="M528 0V340"/><path d="M552 0V340"/><path d="M576 0V340"/><path d="M600 0V340"/><path d="M624 0V340"/><path d="M0 0H640"/><path d="M0 24H640"/><path d="M0 48H640"/><path d="M0 72H640"/><path d="M0 96H640"/><path d="M0 120H640"/><path d="M0 144H640"/><path d="M0 168H640"/><path d="M0 192H640"/><path d="M0 216H640"/><path d="M0 240H640"/><path d="M0 264H640"/><path d="M0 288H640"/><path d="M0 312H640"/><path d="M0 336H640"/></g><rect x="176" y="292" width="300" height="34" rx="8" fill="#161512"/><rect x="170" y="286" width="300" height="34" rx="8" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="281" y="142" width="90" height="150" rx="6" fill="#161512"/><rect x="275" y="136" width="90" height="150" rx="6" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="287" y="150" width="66" height="54" rx="3" fill="#D6492F" stroke="#161512" stroke-width="3"/><path d="M296 162H338" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M296 174H326" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M296 186H326" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M190 118 L190 280" stroke="#161512" stroke-width="3"/><rect x="179" y="110" width="22" height="70" rx="9" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="184" y="98" width="12" height="16" rx="3" fill="#161512"/><path d="M182 180 L198 180 L190 266 Z" fill="#fff" stroke="#161512" stroke-width="3" stroke-linejoin="round"/><path d="M228 118 L228 280" stroke="#161512" stroke-width="3"/><rect x="217" y="110" width="22" height="70" rx="9" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="222" y="98" width="12" height="16" rx="3" fill="#161512"/><path d="M220 180 L236 180 L228 266 Z" fill="#fff" stroke="#161512" stroke-width="3" stroke-linejoin="round"/><path d="M412 118 L412 280" stroke="#161512" stroke-width="3"/><rect x="401" y="110" width="22" height="70" rx="9" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="406" y="98" width="12" height="16" rx="3" fill="#161512"/><path d="M404 180 L420 180 L412 266 Z" fill="#fff" stroke="#161512" stroke-width="3" stroke-linejoin="round"/><path d="M450 118 L450 280" stroke="#161512" stroke-width="3"/><rect x="439" y="110" width="22" height="70" rx="9" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="444" y="98" width="12" height="16" rx="3" fill="#161512"/><path d="M442 180 L458 180 L450 266 Z" fill="#fff" stroke="#161512" stroke-width="3" stroke-linejoin="round"/><text x="16" y="26" font-family="Space Mono, monospace" font-size="13" font-weight="700" letter-spacing="1.5" fill="#B8381F">HEADER &#183; SMARTSTAND</text><rect x="1" y="1" width="638" height="338" fill="none" stroke="#161512" stroke-width="2"/></svg></div>
+    </div>
+  </li>
 
-  <div class="canvas edit" id="canvas">
-    <div class="page" id="page"></div>
-    <aside class="sidekick" aria-label="Sidekick">
-      <h2>Sidekick</h2>
-      <div class="grp">MT Content</div>
-      <ul id="sk-content"></ul>
-      <div class="grp">MT Media</div>
-      <ul id="sk-media"></ul>
-      <div class="note" id="sk-note">Click a component to add it to the open tab&rsquo;s paragraph system.</div>
-    </aside>
+  <li class="frame">
+    <div>
+      <div class="step">Step 2 &middot; Components</div>
+      <h2>Each tab is a stack of components</h2>
+      <p>Inside each tab is a paragraph system: a container you drop components into, in any order. Text, text and image, mood images, carousels and videos all came from a shared component library, so layouts stayed consistent from page to page.</p>
+      <p>In AEM 6 classic UI I had a lot of control here: which components to use, in what order, and how each one was set up.</p>
+      <div class="mine"><b>My part</b>Choosing and arranging components for each page from the library, instead of custom layouts.</div>
+    </div>
+    <div>
+      <div class="tabsx"><span class="on">Overview</span><span>Products and Specs</span><span>Documentation</span><span>Services</span><span>See it in Action</span></div>
+      <p class="parlab">Overview &middot; paragraph system</p>
+      <ol class="stack">
+        <li><b>Reduce out-of-service/specification-related costs</b><span>Text</span></li>
+        <li><b>Proactively manage compliance</b><span>Text &amp; Image</span></li>
+        <li><b>Save time on recordkeeping and reporting</b><span>Text</span></li>
+        <li><b>Lab bench photo</b><span>Standalone Mood Image</span></li>
+        <li><b>It&rsquo;s a charger too!</b><span>Text</span></li>
+        <li class="new">Drag components or assets here</li>
+      </ol>
+    </div>
+  </li>
+
+  <li class="frame">
+    <div>
+      <div class="step">Step 3 &middot; The dialog</div>
+      <h2>Every component has a dialog</h2>
+      <p>Double-click a component in edit mode and its dialog opens: the fields for that component. Change the copy or swap the image, press OK, and the page updates in place.</p>
+      <div class="mine"><b>My part</b>Writing and updating the copy in each component, and picking images from the DAM.</div>
+    </div>
+    <div>
+      <div class="dlg">
+        <div class="ex-h"><span>Text &amp; Image</span><span>dialog</span></div>
+        <label>Title<span class="in">Proactively manage compliance</span></label>
+        <label>Text<span class="in">By reading the RFID chip that&rsquo;s in every Rainin XLS and XLS+ pipette, SmartStand instantly and automatically displays the compliance status of up to four manual Pipet-Lite XLS/XLS+ or electronic E4 XLS/XLS+ pipettes placed on the stand.</span></label>
+        <label>Image<span class="in code">/content/dam/RAININ/mood/smartstand_mood_3-4.jpg</span></label>
+        <div class="acts"><span>Cancel</span><span class="ok">OK</span></div>
+      </div>
+    </div>
+  </li>
+
+  <li class="frame">
+    <div>
+      <div class="step">Step 4 &middot; Assets</div>
+      <h2>Images come from the DAM, in the right size</h2>
+      <p>Photos are uploaded to the DAM once. When a component uses one, it loads a web rendition AEM made from the original, so pages get a right-sized image without anyone resizing it by hand.</p>
+      <div class="mine"><b>My part</b>Managing the Rainin assets in the DAM and placing them on pages.</div>
+    </div>
+    <div>
+      <div class="ex">
+        <div class="ex-h"><span>Asset</span><span>/content/dam/RAININ/mood/</span></div>
+        <div class="ex-b asset">
+          <svg viewBox="0 0 640 340" role="img" aria-label="SmartStand image in the DAM"><rect width="640" height="340" fill="#EFEDE7"/><g stroke="#E2DFD6" stroke-width="1"><path d="M0 0V340"/><path d="M24 0V340"/><path d="M48 0V340"/><path d="M72 0V340"/><path d="M96 0V340"/><path d="M120 0V340"/><path d="M144 0V340"/><path d="M168 0V340"/><path d="M192 0V340"/><path d="M216 0V340"/><path d="M240 0V340"/><path d="M264 0V340"/><path d="M288 0V340"/><path d="M312 0V340"/><path d="M336 0V340"/><path d="M360 0V340"/><path d="M384 0V340"/><path d="M408 0V340"/><path d="M432 0V340"/><path d="M456 0V340"/><path d="M480 0V340"/><path d="M504 0V340"/><path d="M528 0V340"/><path d="M552 0V340"/><path d="M576 0V340"/><path d="M600 0V340"/><path d="M624 0V340"/><path d="M0 0H640"/><path d="M0 24H640"/><path d="M0 48H640"/><path d="M0 72H640"/><path d="M0 96H640"/><path d="M0 120H640"/><path d="M0 144H640"/><path d="M0 168H640"/><path d="M0 192H640"/><path d="M0 216H640"/><path d="M0 240H640"/><path d="M0 264H640"/><path d="M0 288H640"/><path d="M0 312H640"/><path d="M0 336H640"/></g><rect x="176" y="292" width="300" height="34" rx="8" fill="#161512"/><rect x="170" y="286" width="300" height="34" rx="8" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="281" y="142" width="90" height="150" rx="6" fill="#161512"/><rect x="275" y="136" width="90" height="150" rx="6" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="287" y="150" width="66" height="54" rx="3" fill="#D6492F" stroke="#161512" stroke-width="3"/><path d="M296 162H338" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M296 174H326" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M296 186H326" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M190 118 L190 280" stroke="#161512" stroke-width="3"/><rect x="179" y="110" width="22" height="70" rx="9" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="184" y="98" width="12" height="16" rx="3" fill="#161512"/><path d="M182 180 L198 180 L190 266 Z" fill="#fff" stroke="#161512" stroke-width="3" stroke-linejoin="round"/><path d="M228 118 L228 280" stroke="#161512" stroke-width="3"/><rect x="217" y="110" width="22" height="70" rx="9" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="222" y="98" width="12" height="16" rx="3" fill="#161512"/><path d="M220 180 L236 180 L228 266 Z" fill="#fff" stroke="#161512" stroke-width="3" stroke-linejoin="round"/><path d="M412 118 L412 280" stroke="#161512" stroke-width="3"/><rect x="401" y="110" width="22" height="70" rx="9" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="406" y="98" width="12" height="16" rx="3" fill="#161512"/><path d="M404 180 L420 180 L412 266 Z" fill="#fff" stroke="#161512" stroke-width="3" stroke-linejoin="round"/><path d="M450 118 L450 280" stroke="#161512" stroke-width="3"/><rect x="439" y="110" width="22" height="70" rx="9" fill="#fff" stroke="#161512" stroke-width="3"/><rect x="444" y="98" width="12" height="16" rx="3" fill="#161512"/><path d="M442 180 L458 180 L450 266 Z" fill="#fff" stroke="#161512" stroke-width="3" stroke-linejoin="round"/><text x="16" y="26" font-family="Space Mono, monospace" font-size="13" font-weight="700" letter-spacing="1.5" fill="#B8381F">DAM &#183; RAININ/MOOD</text><rect x="1" y="1" width="638" height="338" fill="none" stroke="#161512" stroke-width="2"/></svg>
+          <div>
+            <b>smartstand_mood_3-4.jpg</b>
+            <ul class="rend">
+              <li><span>Original</span><span>uploaded once</span></li>
+              <li><span>cq5dam.web.1280.1280</span><span>pages</span></li>
+              <li><span>cq5dam.thumbnail</span><span>author view</span></li>
+            </ul>
+            <p class="cap">The page loads <span class="mono" style="font-size:12px">&hellip;/renditions/cq5dam.web.1280.1280.jpeg</span>, not the original.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+
+  <li class="frame">
+    <div>
+      <div class="step">Step 5 &middot; Products and the store</div>
+      <h2>The website and the store have to agree</h2>
+      <p>The same products were sold in the online store, which ran on SAP Commerce Cloud. When a product changed, the store listing and the product page both had to change, with the same names and material numbers.</p>
+      <div class="mine"><b>My part</b>Keeping catalogs current for the North American storefronts and checking store listings against the website after each update.</div>
+    </div>
+    <div>
+      <div class="ex">
+        <div class="ex-h"><span>Products and Specs</span><span>website vs store</span></div>
+        <div class="ex-b">
+          <table class="specs">
+            <thead><tr><th scope="col">Product</th><th scope="col">Material No.</th><th scope="col">Store</th></tr></thead>
+            <tbody>
+              <tr><td>SmartStand SCS-B</td><td class="m">30312897</td><td class="match">Matches</td></tr>
+              <tr><td>Fastening Kit Magnetic SCS-FK-M</td><td class="m">30312899</td><td class="match">Matches</td></tr>
+              <tr><td>Fastening Kit Shelf SCS-FK-S</td><td class="m">30313000</td><td class="match">Matches</td></tr>
+              <tr><td>Fastening Kit Bracket SCS-FK-B</td><td class="m">30313247</td><td class="match">Matches</td></tr>
+              <tr><td>Elect Pipettes Pwr Supply E4-RCSWPS</td><td class="m">17012879</td><td class="match">Matches</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </li>
+
+  <li class="frame">
+    <div>
+      <div class="step">Step 6 &middot; 23 markets</div>
+      <h2>English first, then every market</h2>
+      <p>Pages were written in English, sent to Welocalize for translation, and published market by market. Each translated page was compared to the English source before it went live, so no market ended up with missing sections or old copy.</p>
+      <div class="mine"><b>My part</b>Running localization for 23 markets: sending content, publishing translations and checking them against the source.</div>
+    </div>
+    <div>
+      <div class="ex">
+        <div class="ex-h"><span>Translation tracker</span><span>example</span></div>
+        <div class="ex-b">
+          <table class="specs loc">
+            <thead><tr><th scope="col">Step</th><th scope="col">What happens</th></tr></thead>
+            <tbody>
+              <tr><td class="st">01 Send</td><td>Final English copy goes to Welocalize</td></tr>
+              <tr><td class="st">02 Return</td><td>Translations come back for each market</td></tr>
+              <tr><td class="st">03 Build</td><td>Copy goes into the same components on each market&rsquo;s page</td></tr>
+              <tr><td class="st">04 Compare</td><td>Every section checked against the English source</td></tr>
+              <tr><td class="st">05 Publish</td><td>Page activated for that market</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </li>
+
+  <li class="frame">
+    <div>
+      <div class="step">Step 7 &middot; Publish and follow up</div>
+      <h2>Activate, then watch how it does</h2>
+      <p>Once a page was right in author, it was activated to the live site. The work didn&rsquo;t stop there: SEO tools flagged on-page issues to fix, and dashboards showed whether visitors were finding and using the page.</p>
+      <div class="mine"><b>My part</b>Fixing on-page SEO issues found in Ahrefs, AccuRanker and Searchmetrics, and building conversion and engagement dashboards in Adobe Analytics and Google Analytics.</div>
+    </div>
+    <div>
+      <ol class="flow">
+        <li><span>01</span><b>Activate</b>Page goes live from author.</li>
+        <li><span>02</span><b>Check</b>Store listings match the page.</li>
+        <li><span>03</span><b>SEO</b>Fix on-page issues, then re-check rankings.</li>
+        <li><span>04</span><b>Measure</b>Conversion and engagement dashboards.</li>
+      </ol>
+    </div>
+  </li>
+</ol>
+
+<section class="carry">
+  <h2>Where it carries over</h2>
+  <p>Any AEM site built from a component library works this way: pages assembled from shared parts, images from the DAM, and content kept in step with the store and every market. That&rsquo;s the work I&rsquo;d bring.</p>
+  <div class="links">
+    <a class="dark" href="https://marcello415.github.io/portfolio-html/web/work/aem-commerce.html">Read the case study</a>
+    <a href="mt-smartstand.html">See the archived page</a>
   </div>
+</section>
+
 </div>
-
-<div class="dlg-bg" id="dlgBg">
-  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
-    <h2 id="dlgTitle">Edit component</h2>
-    <div class="tabs"><span>General</span></div>
-    <form id="dlgForm"></form>
-    <div class="acts"><button type="button" id="dlgOk">OK</button><button type="button" id="dlgCancel">Cancel</button></div>
-  </div>
-</div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script>
-(function(){
-  var DAM = 'https://web.archive.org/web/20190414172759im_/https://www.mt.com';
-  function rend(path, ext){ return path + '/_jcr_content/renditions/cq5dam.web.1280.1280.' + ext; }
-
-  var COMPONENTS = {
-    landingpageheader:   {name:'Landing Page Header', group:'content', fields:['title','subtitle','image']},
-    text:                {name:'Text', group:'content', fields:['title','text']},
-    textimage:           {name:'Text & Image', group:'content', fields:['title','text','image']},
-    matchingblocktable:  {name:'Product Table', group:'content', fields:[]},
-    doclist:             {name:'Document List', group:'content', fields:[]},
-    servicevalueboxes:   {name:'Service Value Boxes', group:'content', fields:['title','text']},
-    standalonemoodimage: {name:'Standalone Mood Image', group:'media', fields:['image','alt']},
-    embeddedvideo:       {name:'Embedded Video', group:'media', fields:['title','image']}
-  };
-  var FIELD = {title:'Title', subtitle:'Subtitle', text:'Text', image:'Image (DAM path)', alt:'Alt text'};
-
-  var IMG = {
-    mood2: '/dam/RAININ/mood/smartstand_mood_2-2.jpg',
-    mood3: '/dam/RAININ/mood/smartstand_mood_3-4.jpg',
-    mood4: '/dam/RAININ/mood/smartstand_mood_4-2.jpg',
-    video: '/dam/RAININ/FlashMovies/SmtStd.Video.FIRSTframe.png'
-  };
-  function src(path){
-    if (!path) return '';
-    var ext = /\.png$/i.test(path) ? 'png' : 'jpeg';
-    return DAM + rend(path, ext);
-  }
-
-  var initial = function(){ return {
-    header: [
-      {type:'landingpageheader', title:'SmartStand', subtitle:'The World’s First Intelligent Pipette Stand', image:IMG.mood2}
-    ],
-    tabs: [
-      {id:'overview', label:'Overview', par:[
-        {type:'text', title:'Reduce out-of-service/specification-related costs', text:'SmartStand is a unique, easy-to-implement solution to help labs adhere to their standard operating procedures and maintain GLP/GMP compliance. With SmartStand, researchers know the current status of their Rainin XLS or XLS+ pipette every time they use it.'},
-        {type:'textimage', title:'Proactively manage compliance', text:'By reading the RFID chip that’s in every Rainin XLS and XLS+ pipette, SmartStand instantly and automatically displays the compliance status of up to four manual Pipet-Lite XLS/XLS+ or electronic E4 XLS/XLS+ pipettes placed on the stand. Pick up a pipette and SmartStand’s color LCD screen switches to a detailed view of the pipette’s service and calibration data.', image:IMG.mood3},
-        {type:'text', title:'Save time on recordkeeping and reporting', text:'Looking for a more comprehensive pipette management solution? SmartStand comes with our EasyDirect pipette management software. EasyDirect uses SmartStand to collect individual pipette data, then organizes it to provide a complete overview of your entire pipette inventory. Once in EasyDirect, you can search, sort, generate reports and export pipette data to other applications.'},
-        {type:'standalonemoodimage', image:IMG.mood4, alt:'SmartStand on a lab bench'},
-        {type:'text', title:'It’s a charger too!', text:'SmartStand will charge up to four E4 XLS and XLS+ electronic pipettes simultaneously.'}
-      ]},
-      {id:'products', label:'Products and Specs', par:[
-        {type:'matchingblocktable'}
-      ]},
-      {id:'docs', label:'Documentation', par:[
-        {type:'doclist'}
-      ]},
-      {id:'services', label:'Services', par:[
-        {type:'servicevalueboxes', title:'Expert Service – Tailored to Fit Your Pipetting Needs', text:'METTLER TOLEDO supports and services your pipettes through their entire life-cycle, from good pipetting techniques to preventive maintenance and calibration to equipment repair.'}
-      ]},
-      {id:'action', label:'See it in Action', par:[
-        {type:'embeddedvideo', title:'SmartStand in action', image:IMG.video}
-      ]}
-    ]
-  };};
-
-  var PRODUCTS = [
-    ['SmartStand SCS-B','Stand; Hang-Up™','30312897'],
-    ['Fastening Kit Magnetic SCS-FK-M','Hang-Up™','30312899'],
-    ['Fastening Kit Shelf SCS-FK-S','Hang-Up™','30313000'],
-    ['Fastening Kit Bracket SCS-FK-B','Hang-Up™','30313247'],
-    ['Elect Pipettes Pwr Supply E4-RCSWPS','N/A','17012879']
-  ];
-  var DOCS = [
-    ['Operating Instructions','SmartStand User Manual'],
-    ['Operating Instructions','SmartStand - Quick Guide'],
-    ['Operating Instructions','EasyDirect - PAM - Operating Instructions'],
-    ['Operating Instructions','SmartStand Accessories Quick Guide'],
-    ['Brochures','SmartStand Brochures'],
-    ['White Paper','Optimal Quality Management'],
-    ['Software','EasyDirect Software'],
-    ['Certificates','SmartStand - Declaration of Conformity']
-  ];
-  var SERVICES = [
-    ['Uptime','Support & Repair','/dam/Global_Service/global-service-offering/main-service/uptime.jpg',['Rainin Pipette Repair & Service','Service Kits','Onsite Pipette Service']],
-    ['Performance','Maintenance & Optimization','/dam/Global_Service/global-service-offering/main-service/performance.jpg',['Preventive Maintenance']],
-    ['Compliance','Calibration & Quality','/dam/Global_Service/global-service-offering/main-service/compliance.jpg',['Rainin Pipette Calibration Services']],
-    ['Expertise','Training & Consulting','/dam/Global_Service/global-service-offering/main-service/expertise.jpg',['GPP™ - Good Pipetting Practice']]
-  ];
-
-  var page, state = {edit:true, tab:'overview', sel:null};
-  function esc(t){return String(t == null ? '' : t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-
-  function body(c){
-    switch(c.type){
-      case 'landingpageheader':
-        return '<div class="lph"><img src="' + src(c.image) + '" alt=""><div class="txt"><h1>' + esc(c.title) + '</h1><p>' + esc(c.subtitle) + '</p></div></div>';
-      case 'text':
-        return '<div class="text">' + (c.title ? '<h3>' + esc(c.title) + '</h3>' : '') + '<p>' + esc(c.text) + '</p></div>';
-      case 'textimage':
-        return '<div class="textimage"><div class="text"><h3>' + esc(c.title) + '</h3><p>' + esc(c.text) + '</p></div>' + (c.image ? '<img src="' + src(c.image) + '" alt="">' : '') + '</div>';
-      case 'standalonemoodimage':
-        return '<div class="moodimage"><img src="' + src(c.image) + '" alt="' + esc(c.alt) + '"></div>';
-      case 'embeddedvideo':
-        return '<div class="video"><img src="' + src(c.image) + '" alt="' + esc(c.title) + '"><span class="play" aria-hidden="true"></span></div>';
-      case 'matchingblocktable':
-        return '<table class="specs"><thead><tr><th scope="col">Product</th><th scope="col">Stand configuration</th><th scope="col">Material No.</th></tr></thead><tbody>' +
-          PRODUCTS.map(function(p){return '<tr><td>' + esc(p[0]) + '</td><td>' + esc(p[1]) + '</td><td>' + esc(p[2]) + '</td></tr>';}).join('') + '</tbody></table>';
-      case 'doclist':
-        return '<ul class="doclist">' + DOCS.map(function(d){return '<li><b>' + esc(d[1]) + '</b><br><span>' + esc(d[0]) + '</span></li>';}).join('') + '</ul>';
-      case 'servicevalueboxes':
-        return '<div class="text"><h3>' + esc(c.title) + '</h3><p>' + esc(c.text) + '</p></div><div class="svb">' +
-          SERVICES.map(function(s){return '<div class="box"><img src="' + DAM + s[2] + '" alt=""><div><b>' + esc(s[0]) + '</b><span>' + esc(s[1]) + '</span><ul>' + s[3].map(function(i){return '<li>' + esc(i) + '</li>';}).join('') + '</ul></div></div>';}).join('') + '</div>';
-    }
-    return '';
-  }
-
-  function cmp(c, where, i){
-    var def = COMPONENTS[c.type], key = where + ':' + i, editable = def.fields.length > 0;
-    return '<div class="cmp' + (state.sel === key ? ' sel' : '') + '" data-key="' + key + '">' +
-      '<div class="bar"><span>' + esc(def.name) + '</span>' + (editable ? '<button type="button" data-edit="' + key + '">Edit</button>' : '<span>Read-only in this demo</span>') + '</div>' +
-      body(c) + '</div>';
-  }
-
-  function render(){
-    var canvas = document.getElementById('canvas');
-    canvas.className = 'canvas ' + (state.edit ? 'edit' : 'preview');
-    document.getElementById('mEdit').setAttribute('aria-pressed', state.edit);
-    document.getElementById('mPrev').setAttribute('aria-pressed', !state.edit);
-    var tab = page.tabs.filter(function(t){return t.id === state.tab;})[0];
-    var html = '<div class="mt-head"><div class="logo">METTLER TOLEDO<small>RAININ</small></div><nav aria-label="Main"><span>Products &amp; Solutions</span><span>Industries</span><span>Services &amp; Support</span><span>Events &amp; Expertise</span><span>About Us</span></nav></div>' +
-      '<div class="crumbs">You are here: <a href="#" onclick="return false">Home</a> / <a href="#" onclick="return false">Pipettes</a> / <a href="#" onclick="return false">Pipette Management</a> / SmartStand</div>' +
-      '<div class="par">' + page.header.map(function(c, i){return cmp(c, 'header', i);}).join('') + '</div>' +
-      '<div class="par"><div class="cmp" data-key="ptabs"><div class="bar"><span>Product Tabs</span></div><div class="ptabs" role="tablist">' +
-      page.tabs.map(function(t){return '<button type="button" role="tab" aria-selected="' + (t.id === state.tab) + '" data-tab="' + t.id + '">' + esc(t.label) + '</button>';}).join('') + '</div>' +
-      '<div class="tabpanel" role="tabpanel">' + tab.par.map(function(c, i){return cmp(c, tab.id, i);}).join('') +
-      '<div class="parsys-new">Drag components or assets here</div></div></div></div>' +
-      '<div class="mt-foot">&copy; Mettler-Toledo. Rebuilt for this portfolio from the archived April 2019 page.</div>';
-    document.getElementById('page').innerHTML = html;
-    document.getElementById('sk-note').textContent = state.edit ? 'Click a component to add it to the “' + tab.label + '” tab.' : 'Switch to Edit to add components.';
-  }
-
-  function find(key){
-    var parts = key.split(':'), where = parts[0], i = +parts[1];
-    var list = where === 'header' ? page.header : page.tabs.filter(function(t){return t.id === where;})[0].par;
-    return {list:list, i:i, c:list[i]};
-  }
-
-  var editing = null, lastFocus = null;
-  function openDialog(key){
-    var f = find(key), c = f.c, def = COMPONENTS[c.type];
-    editing = key; lastFocus = document.activeElement;
-    document.getElementById('dlgTitle').textContent = def.name;
-    var html = '';
-    def.fields.forEach(function(k){
-      var v = c[k] || '';
-      if (k === 'text') html += '<label><span>' + FIELD[k] + '</span><textarea name="text">' + esc(v) + '</textarea></label>';
-      else if (k === 'image') html += '<label><span>' + FIELD[k] + '</span><input name="image" value="' + esc('/content' + v) + '"></label>' +
-        '<label><span>Rendition (set by the component)</span><input readonly value="cq5dam.web.1280.1280"></label>';
-      else html += '<label><span>' + FIELD[k] + '</span><input name="' + k + '" value="' + esc(v) + '"></label>';
-    });
-    document.getElementById('dlgForm').innerHTML = html;
-    document.getElementById('dlgBg').classList.add('on');
-    var first = document.querySelector('#dlgForm input:not([readonly]),#dlgForm textarea'); if (first) first.focus();
-  }
-  function closeDialog(){
-    document.getElementById('dlgBg').classList.remove('on'); editing = null;
-    if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus();
-  }
-  function saveDialog(){
-    var f = find(editing), c = f.c;
-    Array.prototype.forEach.call(document.querySelectorAll('#dlgForm [name]'), function(el){
-      var v = el.value;
-      if (el.name === 'image') v = v.replace(/^\/content/, '');
-      c[el.name] = v;
-    });
-    closeDialog(); render(); toast('Saved. The page updated in place, the way an author edit did.');
-  }
-
-  function addComponent(type){
-    if (!state.edit) return;
-    var tab = page.tabs.filter(function(t){return t.id === state.tab;})[0];
-    var c = {type:type};
-    if (type === 'text') { c.title = 'New text'; c.text = 'Open Edit to write the copy for this section.'; }
-    if (type === 'textimage') { c.title = 'New text & image'; c.text = 'Open Edit to write the copy and pick an image from the DAM.'; c.image = IMG.mood3; }
-    if (type === 'standalonemoodimage') { c.image = IMG.mood2; c.alt = 'SmartStand'; }
-    if (type === 'embeddedvideo') { c.title = 'Video'; c.image = IMG.video; }
-    tab.par.push(c);
-    state.sel = tab.id + ':' + (tab.par.length - 1);
-    render(); toast(COMPONENTS[type].name + ' added to the “' + tab.label + '” tab.');
-  }
-
-  function toast(m){var t = document.getElementById('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(function(){t.classList.remove('on');}, 2400);}
-
-  ['content','media'].forEach(function(g){
-    document.getElementById('sk-' + g).innerHTML = ['text','textimage','standalonemoodimage','embeddedvideo'].filter(function(k){return COMPONENTS[k].group === g;})
-      .map(function(k){return '<li><button type="button" data-add="' + k + '">' + esc(COMPONENTS[k].name) + '</button></li>';}).join('');
-  });
-
-  document.addEventListener('click', function(e){
-    var t = e.target;
-    if (t.closest('[data-add]')) return addComponent(t.closest('[data-add]').getAttribute('data-add'));
-    if (t.closest('[data-tab]')) { state.tab = t.closest('[data-tab]').getAttribute('data-tab'); state.sel = null; return render(); }
-    if (t.closest('[data-edit]')) return openDialog(t.closest('[data-edit]').getAttribute('data-edit'));
-    var c = t.closest('#page .cmp[data-key*=":"]');
-    if (c && state.edit) { state.sel = c.getAttribute('data-key'); render(); }
-  });
-  document.getElementById('page').addEventListener('dblclick', function(e){
-    var c = e.target.closest('.cmp[data-key*=":"]');
-    if (c && state.edit && COMPONENTS[find(c.getAttribute('data-key')).c.type].fields.length) openDialog(c.getAttribute('data-key'));
-  });
-  document.getElementById('mEdit').addEventListener('click', function(){ state.edit = true; render(); });
-  document.getElementById('mPrev').addEventListener('click', function(){ state.edit = false; state.sel = null; render(); });
-  document.getElementById('dlgOk').addEventListener('click', saveDialog);
-  document.getElementById('dlgCancel').addEventListener('click', closeDialog);
-  document.getElementById('dlgBg').addEventListener('keydown', function(e){
-    if (e.key === 'Escape') closeDialog();
-    if (e.key === 'Tab'){
-      var f = Array.prototype.slice.call(document.querySelectorAll('.dlg input:not([readonly]),.dlg textarea,.dlg button'));
-      var i = f.indexOf(document.activeElement);
-      if (e.shiftKey && i <= 0){ e.preventDefault(); f[f.length - 1].focus(); }
-      else if (!e.shiftKey && i === f.length - 1){ e.preventDefault(); f[0].focus(); }
-    }
-  });
-
-  page = initial(); render();
-})();
-</script>
 </body>
 </html>
